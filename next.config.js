@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const withImages = require("next-images");
-
-module.exports = withImages({
-  reactStrictMode: false,
+const withMDX = require("@next/mdx")({
+  extension: /\.mdx?$/,
 });
+
+module.exports = withImages(
+  withMDX({
+    pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
+    reactStrictMode: false,
+  })
+);

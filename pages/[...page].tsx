@@ -48,7 +48,7 @@ interface LessonProps {
   prev: Hyperlink | null;
 }
 
-interface CourseHeadProps {
+export interface CourseHeadProps {
   title: string;
   courseId: string;
   link: Hyperlink;
@@ -134,110 +134,94 @@ export const components = (courseId: string) => ({
   Youtube: Youtube,
 });
 
-const CoursePage = (props: LessonProps | CourseProps | AllCourseProps) => {
+const CoursePage = (props: LessonProps | CourseProps) => {
   return (
-    <article className="prose prose-slate dark:prose-invert prose-code:leading-6 mx-auto p-6 py-16">
-      {props.type === PropsType.AllCourse ? (
-        <div>
-          {props.list.map((topic, index) => {
+    <article className="prose prose-lg prose-invert prose-code:leading-6 prose-headings:text-emerald-400">
+      <header>
+        <h1>{props.title}</h1>
+        <div className="pl-10 text-sm">
+          <HashtagIcon className="inline w-4 t-4 mb-1 mr-4 text-emerald-400" />
+          {props.tags.map((tag, index) => {
             return (
-              <Link key={index} href={topic.link.link}>
-                {topic.link.title}
-              </Link>
+              <span key={index}>
+                <a href={`/tags/${tag}`}>{tag}</a>
+                {index < props.tags.length - 1 ? ", " : ""}
+              </span>
             );
           })}
+          <br />
+          <time dateTime={props.dateModified}>
+            <CalendarIcon className="inline w-4 t-4 mb-1 mr-4 text-emerald-400" />
+            {`${new Date(props.dateModified).toLocaleDateString("en-EN", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}`}
+          </time>
+          <br />
+          <address>
+            <UsersIcon className="inline w-4 t-4 mb-1 mr-4 text-emerald-400" />
+            <Authors authors={props.authors} />
+          </address>
+          <ClockIcon className="inline w-4 t-4 mb-1 mr-4 text-emerald-400" />
+          {props.readingTime}
         </div>
-      ) : (
-        <>
-          <header>
-            <h1>{props.title}</h1>
-            <div className="pl-10">
-              <HashtagIcon className="inline w-6 t-6 mb-1 mr-4 text-emerald-600 dark:text-emerald-400" />
-              {props.tags.map((tag, index) => {
+      </header>
+      <main className="my-10 py-10 border-y-2 border-slate-500">
+        <MDXRemote {...props.content} components={components(props.courseId)} />
+        {props.type === PropsType.Course ? (
+          <div>
+            <h2>Contents list</h2>
+            <ol>
+              {props.list.map((topic, index) => {
                 return (
-                  <span key={index}>
-                    <a href={`/tags/${tag}`}>{tag}</a>
-                    {index < props.tags.length - 1 ? ", " : ""}
-                  </span>
+                  <div key={index}>
+                    <li>
+                      <Link href={topic.topic.link}>{topic.topic.title}</Link>
+                    </li>
+                    <ul className="leading-4">
+                      {topic.subtopic.map((subtopic, index) => {
+                        return (
+                          <li key={index}>
+                            <Link href={subtopic.link}>{subtopic.title}</Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
                 );
               })}
-              <br />
-              <time dateTime={props.dateModified}>
-                <CalendarIcon className="inline w-6 t-6 mb-1 mr-4 text-emerald-600 dark:text-emerald-400" />
-                {`${new Date(props.dateModified).toLocaleDateString("en-EN", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}`}
-              </time>
-              <br />
-              <address>
-                <UsersIcon className="inline w-6 t-6 mb-1 mr-4 text-emerald-600 dark:text-emerald-400" />
-                <Authors authors={props.authors} />
-              </address>
-              <ClockIcon className="inline w-6 t-6 mb-1 mr-4 text-emerald-600 dark:text-emerald-400" />
-              {props.readingTime}
-            </div>
-          </header>
-          <main className="my-10 border-y-2 border-slate-500">
-            <MDXRemote
-              {...props.content}
-              components={components(props.courseId)}
-            />
-            {props.type === PropsType.Course ? (
-              <div>
-                <h2>Contents list</h2>
-                <ol>
-                  {props.list.map((topic, index) => {
-                    return (
-                      <div key={index}>
-                        <li>
-                          <Link href={topic.topic.link}>
-                            {topic.topic.title}
-                          </Link>
-                        </li>
-                        <ul>
-                          {topic.subtopic.map((subtopic, index) => {
-                            return (
-                              <li key={index}>
-                                <Link href={subtopic.link}>
-                                  {subtopic.title}
-                                </Link>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    );
-                  })}
-                </ol>
-              </div>
-            ) : (
-              <></>
-            )}
-          </main>
-          <div className="grid grid-flow-col">
-            <div className="col-span-3 pr-5">
-              {props.type === PropsType.Lesson && props.prev ? (
-                <Link href={props.prev.link}>
-                  {"Previous: " + props.prev.title}
-                </Link>
-              ) : (
-                <></>
-              )}
-            </div>
-            <div className="col-span-3 pl-5 text-right">
-              {props.type === PropsType.Lesson && props.next ? (
-                <Link href={props.next.link}>
-                  {"Next: " + props.next.title}
-                </Link>
-              ) : (
-                <></>
-              )}
-            </div>
+            </ol>
           </div>
-        </>
-      )}
+        ) : (
+          <></>
+        )}
+      </main>
+      <div className="grid grid-flow-col">
+        <div className="col-span-3 pr-5">
+          {props.type === PropsType.Lesson && props.prev ? (
+            <Link href={props.prev.link}>
+              {"Previous: " + props.prev.title}
+            </Link>
+          ) : (
+            <></>
+          )}
+        </div>
+        <div className="col-span-3 pl-5 text-right">
+          {props.type === PropsType.Lesson && props.next ? (
+            <Link href={props.next.link}>{"Next: " + props.next.title}</Link>
+          ) : (
+            <></>
+          )}
+        </div>
+      </div>
+      <div className="my-10 text-center">
+        {props.type === PropsType.Lesson ? (
+          <Link href={`/${props.courseId}`}>Back to the course page</Link>
+        ) : (
+          <Link href="/course">Back to the main page</Link>
+        )}
+      </div>
     </article>
   );
 };
@@ -265,45 +249,14 @@ export const charactersToReadingTime = (num: number) => {
 
 export const getStaticProps = async ({
   params,
-}: PageParams): Promise<
-  { props: LessonProps | CourseProps | AllCourseProps } | undefined
-> => {
+}: PageParams): Promise<{ props: LessonProps | CourseProps } | undefined> => {
   const coursePath = path.join("courses", params.page[0]);
-  if (params.page[0] === "course") {
-    const courseList = fs.readdirSync("courses");
-    let list: CourseHeadProps[] = [];
-    courseList.forEach((course) => {
-      const lessonPath = path.join("courses", course, "index.mdx");
-      const { data: meta, content } = matter(
-        fs.readFileSync(lessonPath, "utf8")
-      );
-      const stats = fs.statSync(lessonPath);
-      list.push({
-        title: meta.title,
-        courseId: course,
-        link: {
-          title: meta.title,
-          link: `/${course}`,
-        },
-        tags: meta.tags,
-        dateModified: stats.mtime.toUTCString(),
-        dateCreated: stats.birthtime.toUTCString(),
-        authors: meta.authors,
-      });
-    });
-    return {
-      props: {
-        type: PropsType.AllCourse,
-        list,
-      },
-    };
-  }
   const fileList = fs.readdirSync(coursePath);
   fileList.pop();
   fileList.pop();
   switch (params.page.length) {
     case 1: {
-      const lessonPath = path.join("courses", params.page[0], "index.mdx");
+      const lessonPath = path.join(coursePath, "index.mdx");
       const { data: meta, content } = matter(
         fs.readFileSync(lessonPath, "utf8")
       );
@@ -354,11 +307,7 @@ export const getStaticProps = async ({
     }
 
     case 2: {
-      const lessonPath = path.join(
-        "courses",
-        params.page[0],
-        urlToFilename(params.page[1])
-      );
+      const lessonPath = path.join(coursePath, urlToFilename(params.page[1]));
       const orderNumber = fileList.findIndex(
         (file) => file === urlToFilename(params.page[1])
       );
@@ -375,7 +324,9 @@ export const getStaticProps = async ({
           type: PropsType.Lesson,
           title: meta.title,
           courseId: params.page[0],
-          tags: meta.tags,
+          tags: matter(
+            fs.readFileSync(path.join(coursePath, "index.mdx"), "utf8")
+          ).data.tags,
           dateModified: stats.mtime.toUTCString(),
           dateCreated: stats.birthtime.toUTCString(),
           authors: meta.authors,
@@ -419,13 +370,7 @@ export const getStaticProps = async ({
 };
 
 export const getStaticPaths = async () => {
-  let paths: PageParams[] = [
-    {
-      params: {
-        page: ["course"],
-      },
-    },
-  ];
+  let paths: PageParams[] = [];
   fs.readdirSync(path.join("courses")).forEach((course) => {
     fs.readdirSync(path.join("courses", course)).forEach((filename) => {
       if (filename === "img") return;

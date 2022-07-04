@@ -6,9 +6,11 @@ import NavBar from "../src/components/NavBar";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300">
+    <div className="min-h-screen bg-slate-900 text-slate-300 text-lg">
       <NavBar />
-      <Component {...pageProps} />
+      <div className="mx-auto p-6 py-16 max-w-3xl">
+        <Component {...pageProps} />
+      </div>
     </div>
   );
 }
