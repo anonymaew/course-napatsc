@@ -13,6 +13,9 @@ import {
   HashtagIcon,
 } from "@heroicons/react/outline";
 import Image from "next/image";
+import { useEffect } from "react";
+import { useUser } from "../src/functions/Firebase";
+import { useRouter } from "next/router";
 
 interface PageParams {
   params: {
@@ -135,93 +138,125 @@ export const components = (courseId: string) => ({
 });
 
 const CoursePage = (props: LessonProps | CourseProps) => {
+  const user = useUser();
+  const router = useRouter();
+
   return (
     <article className="prose prose-lg prose-invert prose-code:leading-6 prose-headings:text-emerald-400">
-      <header>
-        <h1>{props.title}</h1>
-        <div className="pl-10 text-sm">
-          <HashtagIcon className="inline w-4 t-4 mb-1 mr-4 text-emerald-400" />
-          {props.tags.map((tag, index) => {
-            return (
-              <span key={index}>
-                <a href={`/tags/${tag}`}>{tag}</a>
-                {index < props.tags.length - 1 ? ", " : ""}
-              </span>
-            );
-          })}
-          <br />
-          <time dateTime={props.dateModified}>
-            <CalendarIcon className="inline w-4 t-4 mb-1 mr-4 text-emerald-400" />
-            {`${new Date(props.dateModified).toLocaleDateString("en-EN", {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            })}`}
-          </time>
-          <br />
-          <address>
-            <UsersIcon className="inline w-4 t-4 mb-1 mr-4 text-emerald-400" />
-            <Authors authors={props.authors} />
-          </address>
-          <ClockIcon className="inline w-4 t-4 mb-1 mr-4 text-emerald-400" />
-          {props.readingTime}
-        </div>
-      </header>
-      <main className="my-10 py-10 border-y-2 border-slate-500">
-        <MDXRemote {...props.content} components={components(props.courseId)} />
-        {props.type === PropsType.Course ? (
-          <div>
-            <h2>Contents list</h2>
-            <ol>
-              {props.list.map((topic, index) => {
+      {user === undefined ? (
+        <p className="text-center">Loading</p>
+      ) : user === null && props.type === PropsType.Lesson ? (
+        <>
+          <p className="text-center">
+            You are not authorized to access lesson pages, please{" "}
+            <Link href="/login">login</Link> first.
+          </p>
+          <div className="my-10 text-center">
+            {props.type === PropsType.Lesson ? (
+              <Link href={`/${props.courseId}`}>Back to the course page</Link>
+            ) : (
+              <Link href="/course">Back to the main page</Link>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          <header>
+            <h1>{props.title}</h1>
+            <div className="pl-10 text-sm">
+              <HashtagIcon className="inline w-4 t-4 mb-1 mr-4 text-emerald-400" />
+              {props.tags.map((tag, index) => {
                 return (
-                  <div key={index}>
-                    <li>
-                      <Link href={topic.topic.link}>{topic.topic.title}</Link>
-                    </li>
-                    <ul className="leading-4">
-                      {topic.subtopic.map((subtopic, index) => {
-                        return (
-                          <li key={index}>
-                            <Link href={subtopic.link}>{subtopic.title}</Link>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
+                  <span key={index}>
+                    <a href={`/tags/${tag}`}>{tag}</a>
+                    {index < props.tags.length - 1 ? ", " : ""}
+                  </span>
                 );
               })}
-            </ol>
+              <br />
+              <time dateTime={props.dateModified}>
+                <CalendarIcon className="inline w-4 t-4 mb-1 mr-4 text-emerald-400" />
+                {`${new Date(props.dateModified).toLocaleDateString("en-EN", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}`}
+              </time>
+              <br />
+              <address>
+                <UsersIcon className="inline w-4 t-4 mb-1 mr-4 text-emerald-400" />
+                <Authors authors={props.authors} />
+              </address>
+              <ClockIcon className="inline w-4 t-4 mb-1 mr-4 text-emerald-400" />
+              {props.readingTime}
+            </div>
+          </header>
+          <main className="my-10 py-10 border-y-2 border-slate-500">
+            <MDXRemote
+              {...props.content}
+              components={components(props.courseId)}
+            />
+            {props.type === PropsType.Course ? (
+              <div>
+                <h2>Contents list</h2>
+                <ol>
+                  {props.list.map((topic, index) => {
+                    return (
+                      <div key={index}>
+                        <li>
+                          <Link href={topic.topic.link}>
+                            {topic.topic.title}
+                          </Link>
+                        </li>
+                        <ul className="leading-4">
+                          {topic.subtopic.map((subtopic, index) => {
+                            return (
+                              <li key={index}>
+                                <Link href={subtopic.link}>
+                                  {subtopic.title}
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </ol>
+              </div>
+            ) : (
+              <></>
+            )}
+          </main>
+          <div className="grid grid-flow-col">
+            <div className="col-span-3 pr-5">
+              {props.type === PropsType.Lesson && props.prev ? (
+                <Link href={props.prev.link}>
+                  {"Previous: " + props.prev.title}
+                </Link>
+              ) : (
+                <></>
+              )}
+            </div>
+            <div className="col-span-3 pl-5 text-right">
+              {props.type === PropsType.Lesson && props.next ? (
+                <Link href={props.next.link}>
+                  {"Next: " + props.next.title}
+                </Link>
+              ) : (
+                <></>
+              )}
+            </div>
           </div>
-        ) : (
-          <></>
-        )}
-      </main>
-      <div className="grid grid-flow-col">
-        <div className="col-span-3 pr-5">
-          {props.type === PropsType.Lesson && props.prev ? (
-            <Link href={props.prev.link}>
-              {"Previous: " + props.prev.title}
-            </Link>
-          ) : (
-            <></>
-          )}
-        </div>
-        <div className="col-span-3 pl-5 text-right">
-          {props.type === PropsType.Lesson && props.next ? (
-            <Link href={props.next.link}>{"Next: " + props.next.title}</Link>
-          ) : (
-            <></>
-          )}
-        </div>
-      </div>
-      <div className="my-10 text-center">
-        {props.type === PropsType.Lesson ? (
-          <Link href={`/${props.courseId}`}>Back to the course page</Link>
-        ) : (
-          <Link href="/course">Back to the main page</Link>
-        )}
-      </div>
+          <div className="my-10 text-center">
+            {props.type === PropsType.Lesson ? (
+              <Link href={`/${props.courseId}`}>Back to the course page</Link>
+            ) : (
+              <Link href="/course">Back to the main page</Link>
+            )}
+          </div>
+        </>
+      )}
     </article>
   );
 };

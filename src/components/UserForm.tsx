@@ -165,12 +165,12 @@ const UserForm = (props: UserFormProps) => {
               <></>
             )}
             <div className={responseText ? "block" : "hidden"}>
-              <p className="text-sm rounded-md border border-green-900 p-4 bg-green-300">
+              <p className="text-sm text-black rounded-md border border-green-900 p-4 bg-green-600">
                 {responseText}
               </p>
             </div>
             <div className={warningText ? "block" : "hidden"}>
-              <p className="text-sm rounded-md border border-red-900 p-4 bg-red-300">
+              <p className="text-sm text-black rounded-md border border-red-900 p-4 bg-red-600">
                 {warningText}
               </p>
             </div>

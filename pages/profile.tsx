@@ -38,19 +38,19 @@ const ProfilePage = () => {
               <dl>
                 <div className="border-y border-grey px-4 py-5 grid grid-cols-3">
                   <dt className="font-medium text-gray-500">Email</dt>
-                  <dd className="text-gray-900 col-span-2">
+                  <dd className="text-slate-300 col-span-2">
                     {user ? user.email : ""}
                   </dd>
                 </div>
                 <div className="px-4 py-5 grid grid-cols-3">
                   <dt className="font-medium text-gray-500">Username</dt>
-                  <dd className="text-gray-900 col-span-2">
+                  <dd className="text-slate-300 col-span-2">
                     {user ? user.displayName : ""}
                   </dd>
                 </div>
                 <div className="border-y border-grey px-4 py-5 grid grid-cols-3">
                   <dt className="font-medium text-gray-500">User ID</dt>
-                  <dd className="text-gray-900 text-sm font-mono col-span-2">
+                  <dd className="text-slate-300 text-sm font-mono col-span-2">
                     {user ? user.uid : ""}
                   </dd>
                 </div>
