@@ -15,7 +15,7 @@ import {
 } from "@heroicons/react/outline";
 import Image from "next/image";
 import { useEffect } from "react";
-import { useUser } from "../src/functions/Firebase";
+import { useUser } from "../functions/Firebase";
 import { useRouter } from "next/router";
 
 export const courseDir = "course-napatsc-lesson";

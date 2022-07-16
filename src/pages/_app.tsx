@@ -2,7 +2,7 @@ import "../styles/globals.css";
 import "../styles/github-dark.min.css";
 import type { AppProps } from "next/app";
 import React from "react";
-import NavBar from "../src/components/NavBar";
+import NavBar from "../components/NavBar";
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
