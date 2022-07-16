@@ -7,6 +7,7 @@ import { CourseHeadProps } from "./[...page]";
 import Tags from "../src/components/Tag";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { courseDir } from "./[...page]";
 
 interface AllCourseProps {
   list: CourseHeadProps[];
@@ -153,9 +154,9 @@ const AllCoursePage = (props: AllCourseProps) => {
 };
 
 export const getStaticProps = async () => {
-  const courseList = fs.readdirSync("courses");
+  const courseList = fs.readdirSync(courseDir);
   const list = courseList.map((course) => {
-    const lessonPath = path.join("courses", course, "index.mdx");
+    const lessonPath = path.join(courseDir, course, "index.mdx");
     const meta = matter(fs.readFileSync(lessonPath, "utf8")).data;
     const stats = fs.statSync(lessonPath);
     return {

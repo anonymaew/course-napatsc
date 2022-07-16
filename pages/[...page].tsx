@@ -18,6 +18,8 @@ import { useEffect } from "react";
 import { useUser } from "../src/functions/Firebase";
 import { useRouter } from "next/router";
 
+export const courseDir = "course-napatsc-lesson";
+
 interface PageParams {
   params: {
     page: string[];
@@ -84,7 +86,8 @@ const NextImage = (props: any) => {
   return (
     <div className="mx-auto max-w-lg">
       <Image
-        {...require(`../courses/${props.courseId}/img/${props.src}`).default}
+        {...require(`../${courseDir}/${props.courseId}/img/${props.src}`)
+          .default}
         alt={props.alt}
       />
       <p className="text-sm text-center text-slate-500">{props.alt}</p>
@@ -286,7 +289,7 @@ export const charactersToReadingTime = (num: number) => {
 export const getStaticProps = async ({
   params,
 }: PageParams): Promise<{ props: LessonProps | CourseProps } | undefined> => {
-  const coursePath = path.join("courses", params.page[0]);
+  const coursePath = path.join(courseDir, params.page[0]);
   const fileList = fs.readdirSync(coursePath);
   fileList.pop();
   fileList.pop();
@@ -411,8 +414,8 @@ export const getStaticProps = async ({
 
 export const getStaticPaths = async () => {
   let paths: PageParams[] = [];
-  fs.readdirSync(path.join("courses")).forEach((course) => {
-    fs.readdirSync(path.join("courses", course)).forEach((filename) => {
+  fs.readdirSync(path.join(courseDir)).forEach((course) => {
+    fs.readdirSync(path.join(courseDir, course)).forEach((filename) => {
       if (filename === "img") return;
       const page = fileNameToUrl(filename);
       paths.push({
