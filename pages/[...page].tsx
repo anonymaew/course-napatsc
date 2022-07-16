@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { serialize } from "next-mdx-remote/serialize";
+import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import {
   CalendarIcon,
@@ -81,12 +82,12 @@ interface AllCourseProps {
 
 const NextImage = (props: any) => {
   return (
-    <div>
+    <div className="mx-auto max-w-lg">
       <Image
         {...require(`../courses/${props.courseId}/img/${props.src}`).default}
         alt={props.alt}
       />
-      <p>{props.alt}</p>
+      <p className="text-sm text-center text-slate-500">{props.alt}</p>
     </div>
   );
 };
@@ -142,7 +143,7 @@ const CoursePage = (props: LessonProps | CourseProps) => {
   const router = useRouter();
 
   return (
-    <article className="prose prose-lg prose-invert prose-code:leading-6 prose-headings:text-emerald-400">
+    <article className="prose prose-lg prose-invert prose-headings:text-emerald-400 prose-code:leading-6 prose-code:font-normal prose-code:bg-zinc-700 prose-code:p-1 prose-code:rounded-md prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:bg-transparent prose-pre:p-0">
       {user === undefined ? (
         <p className="text-center">Loading</p>
       ) : user === null && props.type === PropsType.Lesson ? (
@@ -297,8 +298,10 @@ export const getStaticProps = async ({
       );
       const stats = fs.statSync(lessonPath);
       const mdx = await serialize(content, {
-        //@ts-ignore
-        mdxOptions: { rehypePlugins: [rehypeHighlight] },
+        mdxOptions: {
+          remarkPlugins: [remarkGfm],
+          rehypePlugins: [rehypeHighlight],
+        },
       });
       let lessonList: { topic: Hyperlink; subtopic: Hyperlink[] }[] = [];
       for (let fileName of fileList) {
@@ -351,8 +354,10 @@ export const getStaticProps = async ({
       );
       const stats = fs.statSync(lessonPath);
       const mdx = await serialize(content, {
-        //@ts-ignore
-        mdxOptions: { rehypePlugins: [rehypeHighlight] },
+        mdxOptions: {
+          remarkPlugins: [remarkGfm],
+          rehypePlugins: [rehypeHighlight],
+        },
       });
       return {
         props: {
